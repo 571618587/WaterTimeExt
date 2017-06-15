@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd ">
+	<bean id="sessionDAO" class="org.apache.shiro.session.mgt.eis.MemorySessionDAO"></bean>
+	<bean id="sessionManager"
+		class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		<!-- 会话的全局过期时间（毫秒为单位），默认30分钟 -->
+		<property name="globalSessionTimeout" value="1800000" />
+		<!-- 会话过期将被删除 -->
+		<property name="deleteInvalidSessions" value="true" />
+		<!-- 扫描session线程,负责清理超时会话 -->
+		<property name="sessionValidationSchedulerEnabled" value="true" />
+		<!-- 相隔多久检查一次session的有效性 -->
+		<property name="sessionValidationInterval" value="1800000" />
+		<!-- 会话Cookie模板 储存SessionId -->
+		<property name="sessionIdCookie" ref="sessionIdCookie" />
+		<property name="sessionDAO" ref="sessionDAO"></property>
+	</bean>
+
+	<bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<!-- 指定SessonId的名称 -->
+		<constructor-arg name="name" value="SHRIOSESSIONID" />
+	</bean>
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="cacheManager" ref="cacheManager" />
+		<property name="realms">
+			<list>
+				<ref bean="jdbcRealm" />
+			</list>
+		</property>
+		<!-- shiro session管理器 -->
+		<property name="sessionManager" ref="sessionManager"></property>
+	</bean>
+	<bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManagerConfigFile" value="classpath:ehcache.xml" />
+	</bean>
+
+	<!-- <bean id="shiroRealm" class="com.ytzl.wt.realms.ShiroRealms"> -->
+	<!-- </bean> -->
+
+	<bean id="jdbcRealm" class="com.ytzl.wt.realms.CustomJdbcRealm">
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- 为true时，进行权限Sql查询 -->
+		<property name="permissionsLookupEnabled" value="true"></property>
+		<!-- 授权Sql -->
+		<property name="authenticationQuery"
+			value="SELECT su.password FROM sys_user su where su.account = ? "></property>
+		<!-- 获取角色Sql -->
+		<property name="userRolesQuery"
+			value="SELECT sr.rkey FROM sys_role sr,sys_user su,sys_user_role sur where sr.rcode = sur.role_code and su.user_code = sur.user_code and su.account = ?"></property>
+		<!-- 获取权限Sql -->
+		<property name="permissionsQuery"
+			value="SELECT sp.pkey FROM sys_permission sp ,sys_role sr ,sys_role_permission srp WHERE sp.pcode = srp.permission_code and sr.rcode = srp.role_code and sr.rkey = ?"></property>
+	</bean>
+
+	<!-- 让Spring管理Shiro的bean -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+
+	<!-- 开启Shiro的注解，必须在之前配置 lifecycleBeanPostProcessor -->
+	<bean
+		class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+		depends-on="lifecycleBeanPostProcessor" />
+	<bean
+		class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager" />
+	</bean>
+
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager" />
+		<property name="loginUrl" value="/send_login.jhtml" />
+		<!-- <property name="successUrl" value="/index.jsp" /> -->
+		<!-- <property name="unauthorizedUrl" value="/unauthorized.jsp" /> -->
+		<!-- 拦截器: authc:需要授权才能继续访问 anon :无需授权即可访问 ? :匹配单个字符 * :在同级匹配任意字符 ** :匹配任意字符 -->
+		<!-- /login.jsp=anon /sysUser/**=anon /logout = logout /** = authc -->
+		<property name="filterChainDefinitions">
+			<value>
+				/send_login**=anon
+				/send_**=authc
+				/** = anon
+			</value>
+		</property>
+	</bean>
+
+
+
+</beans>   

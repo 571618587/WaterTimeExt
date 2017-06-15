@@ -1,0 +1,29 @@
+1:搭建SSM框架
+	1.1:搭建Spring
+		1.1.1:添加maven依赖
+		1.1.2:添加Spring配置文件
+		1.1.3:添加bean id为date class为java.util.Date
+		1.1.4:使用Junit4进行测试，在SpringIOC中获取beanID为date的对象进行输出
+	1.2:搭建mybatis
+		1.2.1:添加maven依赖
+		1.2.2:添加mybatis配置文件
+		1.2.3:创建实体bean
+		1.2.4:编写mapper文件,并添加到mybatis配置文件中
+		1.2.5:使用junit4测试
+	1.3:集成mybatis和spring
+		1.3.1:配置spring配置文件
+			1.3.1.1:添加数据源
+			1.3.1.2:添加sqlSessionFactory
+			1.3.1.3:添加事务管理器
+			1.3.1.4:aop切面表达式，植入事务
+			1.3.1.5:配置mybatis mapper映射
+	1.4:添加SpringMVC，集成SSM
+		1.4.1:添加maven依赖
+		1.4.2:添加SpringMVC的配置文件
+			1.4.2.1:开启Spring注解扫描
+			1.4.2.2:开启SpringMVC注解驱动
+			1.4.2.3:配置消息转换器
+			1.4.2.4:配置视图解析器
+		1.4.3:配置web.xml添加DispatcherServlet和
+					Spring的ContextLoaderListener
+		1.4.4:创建Controller进行测试
