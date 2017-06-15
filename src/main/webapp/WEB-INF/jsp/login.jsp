@@ -32,8 +32,7 @@
 					</label>
 					<p class="forgot"></p>
 					<div class="rem_sub">
-						<label> <a id="button" href="javascript:void(0);" class="easyui-linkbutton sub_button">登录</a>
-						</label>
+						<label id="button"> </label>
 					</div>
 				</div>
 			</form>

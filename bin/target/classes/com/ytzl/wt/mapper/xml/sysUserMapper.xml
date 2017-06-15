@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ytzl.wt.mapper.SysUserMapper">
+
+	<sql id="SysUserSql">
+		su.id id,su.user_code userCode,
+		su.account account,su.name
+		name,su.password password,
+		su.sex sex,su.phone phone,su.email
+		email,su.is_use isUse
+	</sql>
+
+	<select id="query" resultType="SysUser">
+		select
+		<include refid="SysUserSql"></include>
+		from sys_user su
+	</select>
+
+	<select id="findByAccount" parameterType="string" resultType="SysUser">
+		select
+		<include refid="SysUserSql"></include>
+		from sys_user su where su.account=#{_parameter}
+	</select>
+
+	<select id="queryPage" parameterType="map" resultType="SysUser">
+		select
+		<include refid="SysUserSql"></include>
+		from sys_user su
+		where su.account LIKE #{account} LIMIT
+		${startSize},${rows}
+	</select>
+	<select id="getCount" parameterType="map" resultType="long">
+		select
+		count(1)
+		from sys_user su
+		where su.account LIKE #{account}
+	</select>
+	<update id="update" parameterType="SysUser">
+		update sys_user set
+		is_use=${isUse},account=#{account},name=#{name}
+		,sex=${sex},phone=#{phone},email=#{email}
+		where user_code=#{userCode}
+	</update>
+	<update id="updateDisabled" parameterType="SysUser">
+		update
+		sys_user set
+		is_use=${isUse} where user_code=#{userCode}
+	</update>
+	<insert id="save" parameterType="SysUser">
+		INSERT INTO sys_user
+		(user_code,
+		account, name, password, sex, phone, email, is_use)
+		VALUES
+		(#{userCode},#{account},#{name},#{password},#{sex},
+		#{phone},#{email},#{isUse})
+	</insert>
+</mapper>
+
+
+
+
+
