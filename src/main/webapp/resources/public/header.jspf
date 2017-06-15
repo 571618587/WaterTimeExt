@@ -4,3 +4,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://shiro.apache.org/tags" prefix="shiro"%>
 <c:set var="wt" value="${pageContext.request.contextPath }"></c:set>
+<!-- extJs start -->
+<link rel="stylesheet" type="text/css" href="${wt}/resources/js/ext-4.2.1/resources/css/ext-all.css" />
+<script type="text/javascript" src="${wt}/resources/js/ext-4.2.1/ext-all-debug-w-comments.js"></script>
+<script type="text/javascript" src="${wt}/resources/js/ext-4.2.1/locale/ext-lang-zh_CN.js"></script>
+<!-- extJs end -->
